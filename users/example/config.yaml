@@ -1,0 +1,239 @@
+# ============================================================
+# Job Search Config — EXAMPLE (fully commented reference)
+# ============================================================
+# This file documents every available field. Don't edit this one —
+# edit users/me/config.yaml (a copy of this file) with YOUR details.
+#
+# Run with: python orchestrator.py --user example
+#
+# The example is written for a junior DevOps/Cloud engineer, but the
+# system works for ANY field — supply chain, finance, marketing,
+# design, healthcare — because every keyword and filter below comes
+# from this file, not from the code. For a non-engineering role, just
+# swap the keywords/terms for your field's vocabulary and set
+# incompatible_languages to [].
+# ============================================================
+
+# Your name (used in logs) and the email address that receives the
+# daily shortlist. This does NOT have to be the Gmail account that
+# SENDS the email (that's whichever account you authorize in
+# SETUP_EMAIL.md) — but for a personal setup they're usually the same.
+name: "Example User"
+email: "you@example.com"
+
+# ---- LinkedIn search terms --------------------------------
+# Every entry in role_keywords + tech_keywords is sent as its own
+# LinkedIn search in every region. More keywords = longer runs; a
+# focused list of 8-15 works well.
+
+role_keywords:
+  - "DevOps Engineer"
+  - "Platform Engineer"
+  - "Site Reliability Engineer"
+  - "Cloud Engineer"
+  - "Infrastructure Engineer"
+
+tech_keywords:
+  - "Terraform"
+  - "Kubernetes"
+  - "CI/CD"
+
+# ---- Scoring: tech terms matched in job descriptions ------
+# Lowercase substrings. The more of these that appear in a job's
+# title + description, the higher its role-match score (0-40 pts).
+# These don't have to be technologies: for a finance role use things
+# like "financial modelling", "fp&a", "audit"; for marketing use
+# "seo", "google ads", "campaign".
+
+tech_terms:
+  - terraform
+  - ansible
+  - kubernetes
+  - docker
+  - ci/cd
+  - pipeline
+  - github actions
+  - gitlab ci
+  - aws
+  - azure
+  - gcp
+  - cloud infrastructure
+  - infrastructure as code
+  - observability
+  - site reliability
+
+# ---- Scoring: role-title match ----------------------------
+# If the job TITLE contains one of these, the job gets full title
+# credit in the role-match score.
+
+role_titles:
+  - devops
+  - platform
+  - sre
+  - site reliability
+  - cloud engineer
+  - infrastructure engineer
+
+# ---- Domain confirmation (optional but recommended) -------
+# A subset of tech_terms that uniquely identify YOUR field. If set,
+# at least one must appear in the job text for it to get any role
+# score at all. This stops generic words ("pipeline", "reporting")
+# from carrying unrelated roles into your shortlist.
+# Leave as [] to disable.
+
+core_tech_terms:
+  - terraform
+  - kubernetes
+  - ci/cd
+  - infrastructure as code
+  - devops
+
+# ---- Dealbreaker: excluded role names (matched in job title) ----
+# Jobs whose TITLE contains any of these are skipped entirely.
+# Use it to remove adjacent-but-wrong roles that share your keywords.
+
+excluded_role_terms:
+  - helpdesk
+  - help desk
+  - service desk
+  - desktop support
+  - 1st line
+  - 2nd line
+
+# ---- Dealbreaker: description-only terms ------------------
+# Skipped if these appear ANYWHERE in the posting. Reserve for niche
+# phrases that unambiguously identify a wrong-fit role even when the
+# title looks fine. Leave as [] if unsure.
+
+excluded_description_terms: []
+
+# ---- Dealbreaker: non-target language dominance -----------
+# Programming languages that signal a different kind of role. A job
+# mentioning these 3+ times with ZERO hits from tech_terms is skipped;
+# fewer mentions are just noted in the match reason.
+# Set to [] for non-engineering roles.
+
+incompatible_languages:
+  - PHP
+  - Ruby
+  - "C++"
+
+# ---- Seniority --------------------------------------------
+# One of: graduate | junior | mid | senior
+# graduate/junior: titles with senior/lead/principal/director/vp/manager are skipped
+# mid:             titles with head of/director/vp are skipped
+# senior:          no title-level filtering
+
+seniority: junior
+
+# Jobs explicitly requiring more than this many years of experience
+# are skipped. Set to your experience + a small buffer; 99 disables it.
+max_years_exp: 3
+
+# ---- Optional: override the seniority title filter --------
+# In some fields "Manager" is a junior title (e.g. supply chain).
+# Uncomment to replace the seniority-based defaults with your own list.
+# excluded_title_terms:
+#   - senior
+#   - director
+#   - "head of"
+
+# ---- Optional: priority / secondary sub-fields ------------
+# If your search spans two adjacent sub-fields and you prefer one,
+# titles matching priority_role_titles get a bonus, and titles that
+# ONLY match secondary_role_titles are held down to C-tier (scored,
+# logged, never emailed). Leave all three empty to disable.
+priority_role_titles: []
+priority_tech_terms: []
+secondary_role_titles: []
+
+# ---- Visa / sponsorship -----------------------------------
+# true: jobs mentioning sponsorship (see visa_signals) get a bonus.
+# false: no effect.
+requires_sponsorship: false
+
+# ---- Regions (LinkedIn locations + salary expectations) ----
+# One entry per LinkedIn search area. Find the linkedin_loc string by
+# searching jobs on linkedin.com and copying the location exactly as
+# LinkedIn autocompletes it.
+#   min_salary:    jobs listing a salary BELOW this are skipped.
+#                  Set 0 to disable salary filtering for the region.
+#   target_salary: [low, high] — listed salaries at/above `low` score
+#                  full salary points. (Only `low` is used by the scorer.)
+#   urban_center:  informational flag for city-specific entries.
+# Jobs that don't list a salary are NEVER filtered — they get a
+# neutral salary score ("benefit of the doubt").
+
+regions:
+  - id: ireland
+    linkedin_loc: "Ireland"
+    currency: EUR
+    min_salary: 40000
+    target_salary: [45000, 55000]
+
+  - id: london
+    linkedin_loc: "London, England, United Kingdom"
+    currency: GBP
+    min_salary: 50000
+    target_salary: [55000, 70000]
+    urban_center: true
+
+  - id: amsterdam
+    linkedin_loc: "Amsterdam, North Holland, Netherlands"
+    currency: EUR
+    min_salary: 45000
+    target_salary: [55000, 70000]
+    urban_center: true
+
+# ---- Urban center filters (optional) ----------------------
+# For broad country-level regions, skip jobs whose location field
+# doesn't name one of these cities. Keyed by region id.
+# Example:
+# urban_centers:
+#   australia:
+#     - sydney
+#     - melbourne
+#     - brisbane
+urban_centers: {}
+
+# ---- Visa sponsorship signal terms (optional) -------------
+# Per-region phrases that indicate an employer sponsors visas; jobs
+# mentioning one get a +10 bonus in that region. Keyed by region id.
+# Example:
+# visa_signals:
+#   australia:
+#     - visa sponsorship
+#     - willing to sponsor
+#     - 482 visa
+visa_signals: {}
+
+# Large multinationals that reliably sponsor visas in a region — a
+# softer +5 bonus keyed on company name. Keyed by region id.
+# Example:
+# visa_large_mncs:
+#   singapore:
+#     - google
+#     - microsoft
+visa_large_mncs: {}
+
+# ---- CVs (optional) ---------------------------------------
+# If you list CVs, each emailed job includes a "CV:" line recommending
+# the best match by match_terms. Keep actual CV files OUT of the repo
+# if your copy is public — the path is just a label in the email.
+# Example:
+# cvs:
+#   - path: "MyName_DevOps.pdf"
+#     match_terms:
+#       - ci/cd
+#       - kubernetes
+#   - path: "MyName_Cloud.pdf"
+#     match_terms:
+#       - cloud migration
+#       - azure
+cvs: []
+
+# ---- Optional path overrides ------------------------------
+# Defaults (relative to the repo root) usually don't need changing:
+#   companies_to_avoid_file: companies_to_avoid.md
+#   data_dir:  users/<name>/data
+#   seen_jobs_file: users/<name>/seen_jobs.json

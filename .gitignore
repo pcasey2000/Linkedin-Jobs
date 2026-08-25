@@ -1,0 +1,28 @@
+# Gmail API credentials — NEVER commit these (secrets!)
+credentials.json
+token.json
+service-account.json
+
+# Per-run data (regenerated every run)
+users/*/data/
+data/
+
+# Logs
+logs/
+*.log
+
+# CVs — keep résumé files out of the repo
+*.pdf
+*.docx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,64 @@
+name: Daily Job Search
+
+# Scrapes LinkedIn, scores against your users/<name>/config.yaml, and emails
+# you the shortlist. Times are UTC: '0 7 * * 1-5' = 07:00 UTC Mon-Fri
+# (08:00 Irish/UK summer time, 09:00 central-European summer time).
+#
+# Requires two repository secrets (see SETUP_EMAIL.md):
+#   GMAIL_CREDENTIALS_JSON — contents of your credentials.json
+#   GMAIL_TOKEN_JSON       — contents of your token.json
+#
+# Which user config runs is controlled by the JOB_USER repository variable
+# (Settings → Secrets and variables → Actions → Variables). If unset, it
+# defaults to "me" — i.e. users/me/config.yaml.
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'
+  workflow_dispatch:  # manual trigger for testing (Actions tab → Run workflow)
+
+permissions:
+  contents: write   # needed to commit seen_jobs.json back after each run
+
+jobs:
+  scrape-and-email:
+    runs-on: ubuntu-latest
+    env:
+      JOB_USER: ${{ vars.JOB_USER || 'me' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so the bot can push back cleanly
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore Gmail credentials
+        run: |
+          echo '${{ secrets.GMAIL_TOKEN_JSON }}' > token.json
+          echo '${{ secrets.GMAIL_CREDENTIALS_JSON }}' > credentials.json
+
+      - name: Run job search pipeline
+        run: python3 orchestrator.py --user "$JOB_USER"
+
+      - name: Persist seen_jobs.json
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage and commit the orchestrator's seen_jobs change BEFORE pulling:
+          # `git pull --rebase` refuses to run with unstaged changes.
+          # (On a run with no new jobs the file may not have changed or may
+          # not exist yet — both cases fall through to "nothing to commit".)
+          if [ -f "users/$JOB_USER/seen_jobs.json" ]; then
+            git add "users/$JOB_USER/seen_jobs.json"
+          fi
+          git diff --staged --quiet || git commit -m "chore: update $JOB_USER seen_jobs [skip ci]"
+          # Push back to the branch the workflow ran on.
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

@@ -1,0 +1,90 @@
+# ============================================================
+# Job Search Config — THIS IS YOUR FILE. Edit it.
+# ============================================================
+# Every field is documented in users/example/config.yaml — open the
+# two side by side. Two ways to fill this in:
+#   1. Edit by hand, or
+#   2. Fill in onboarding_form.md and paste it into an AI assistant
+#      (e.g. Claude) with this repo open — it generates this file.
+#
+# The daily workflow runs: python orchestrator.py --user me
+# ============================================================
+
+name: "Your Name"
+email: "you@example.com"          # where your daily shortlist is sent
+
+# ---- LinkedIn search terms (each is a separate search per region) ----
+role_keywords:
+  - "DevOps Engineer"
+  - "Platform Engineer"
+  - "Cloud Engineer"
+
+tech_keywords:
+  - "Terraform"
+  - "Kubernetes"
+
+# ---- Scoring: terms matched in job descriptions ----
+tech_terms:
+  - terraform
+  - ansible
+  - kubernetes
+  - docker
+  - ci/cd
+  - aws
+  - azure
+  - infrastructure as code
+
+# ---- Scoring: job title should contain one of these ----
+role_titles:
+  - devops
+  - platform
+  - cloud engineer
+  - infrastructure engineer
+
+# ---- At least one of these must appear, or the job scores 0 role points ----
+core_tech_terms:
+  - terraform
+  - kubernetes
+  - ci/cd
+  - devops
+
+# ---- Dealbreakers ----
+excluded_role_terms:
+  - helpdesk
+  - service desk
+  - desktop support
+
+excluded_description_terms: []
+
+incompatible_languages: []
+
+# ---- Seniority: graduate | junior | mid | senior ----
+seniority: junior
+max_years_exp: 3
+
+# ---- Visa ----
+requires_sponsorship: false
+
+# ---- Regions ----
+regions:
+  - id: ireland
+    linkedin_loc: "Ireland"
+    currency: EUR
+    min_salary: 40000
+    target_salary: [45000, 55000]
+
+  - id: london
+    linkedin_loc: "London, England, United Kingdom"
+    currency: GBP
+    min_salary: 50000
+    target_salary: [55000, 70000]
+    urban_center: true
+
+# ---- Optional blocks (see users/example/config.yaml) ----
+urban_centers: {}
+visa_signals: {}
+visa_large_mncs: {}
+cvs: []
+priority_role_titles: []
+priority_tech_terms: []
+secondary_role_titles: []
